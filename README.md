@@ -1,5 +1,7 @@
 # minimax-code-linux
 
+> **中文版 README** | [English README](README.en.md)
+
 把 MiniMax Code(macOS/Windows 专属的 Electron 桌面应用)移植到 Linux 的非官方项目。
 支持**国内版**与**海外版**双版本,可输出 `.deb` / `.rpm` / pacman / AppImage 包。
 
