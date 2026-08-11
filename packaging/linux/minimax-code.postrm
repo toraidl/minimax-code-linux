@@ -1,0 +1,22 @@
+#!/bin/sh
+# MiniMax Code deb postrm:反向清理本版本协议默认项并刷新缓存
+set -eu
+
+# purge 时尽力移除用户级 mimeapps.list 里本版本注册的协议项
+# (xdg-mime 没有 unset,直接编辑文件;失败可忽略)
+if [ "${1:-}" = "purge" ]; then
+    MIMEAPPS="${XDG_CONFIG_HOME:-$HOME/.config}/mimeapps.list"
+    if [ -f "$MIMEAPPS" ]; then
+        sed -i "/x-scheme-handler\/__PROTOCOL__=/d" "$MIMEAPPS" 2>/dev/null || true
+    fi
+fi
+
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database /usr/share/applications >/dev/null 2>&1 || true
+fi
+
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+    gtk-update-icon-cache -f /usr/share/icons/hicolor >/dev/null 2>&1 || true
+fi
+
+exit 0

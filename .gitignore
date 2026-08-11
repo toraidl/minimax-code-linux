@@ -1,0 +1,21 @@
+# 构建产物与工作目录(install.sh 生成,可随时重建)
+app/
+app-cn/
+work/
+native-rebuild/
+dist/
+
+# 打包中间产物
+*.deb
+*.rpm
+*.pkg.tar.zst
+*.AppImage
+*.dmg
+*.zip
+
+# 系统/编辑器
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/

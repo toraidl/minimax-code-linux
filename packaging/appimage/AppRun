@@ -1,0 +1,42 @@
+#!/bin/bash
+# MiniMax Code AppImage 启动器
+# 布局(与 electron-builder AppImage 惯例一致):
+#   AppRun
+#   usr/bin/<pkg>            → ../lib/<pkg>/<pkg> 符号链接
+#   usr/lib/<pkg>/           electron 运行时(二进制 + icudtl.dat + *.pak + *.so + locales)
+#   usr/lib/<pkg>/resources/ app.asar 等
+set -euo pipefail
+
+resolve_appdir() {
+    local source="${BASH_SOURCE[0]}"
+    local dir
+
+    while [ -L "$source" ]; do
+        dir="$(cd -P "$(dirname "$source")" && pwd)"
+        source="$(readlink "$source")"
+        case "$source" in
+            /*) ;;
+            *) source="$dir/$source" ;;
+        esac
+    done
+
+    cd -P "$(dirname "$source")" && pwd
+}
+
+APPDIR="${APPDIR:-$(resolve_appdir)}"
+export APPDIR
+
+APP_BIN="$APPDIR/usr/lib/__PACKAGE_NAME__/__PACKAGE_NAME__"
+APP_ASAR="$APPDIR/usr/lib/__PACKAGE_NAME__/resources/app.asar"
+
+# 默认无沙箱兜底:AppImage 内 chrome-sandbox 没有 SUID 权限时必须加 --no-sandbox
+EXTRA_ARGS=""
+if ! [ -u "$APPDIR/usr/lib/__PACKAGE_NAME__/chrome-sandbox" ]; then
+    EXTRA_ARGS="--no-sandbox"
+fi
+
+exec "$APP_BIN" $EXTRA_ARGS \
+    --enable-features=UseOzonePlatform \
+    --ozone-platform-hint=auto \
+    --class="__PACKAGE_NAME__" \
+    "$APP_ASAR" "$@"

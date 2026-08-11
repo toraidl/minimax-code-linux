@@ -1,0 +1,19 @@
+#!/bin/sh
+# MiniMax Code deb postinst:注册本版本协议 + 刷新桌面/图标缓存
+set -eu
+
+# OAuth 登录回调:cn 版只注册 minimax-cn,global 版只注册 minimax,
+# 避免两版互相覆盖协议默认 handler
+if command -v xdg-mime >/dev/null 2>&1; then
+    xdg-mime default __PACKAGE_NAME__.desktop x-scheme-handler/__PROTOCOL__ >/dev/null 2>&1 || true
+fi
+
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database /usr/share/applications >/dev/null 2>&1 || true
+fi
+
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+    gtk-update-icon-cache -f /usr/share/icons/hicolor >/dev/null 2>&1 || true
+fi
+
+exit 0

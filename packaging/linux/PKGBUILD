@@ -1,0 +1,46 @@
+# Maintainer: MiniMax Code for Linux Maintainers
+pkgname=__PACKAGE_NAME__
+pkgver=__PKGVER__
+pkgrel=__PKGREL__
+pkgdesc="MiniMax Code for Linux — unofficial Linux port"
+arch=('__ARCH__')
+url="https://github.com/minimax-code/minimax-code-linux"
+license=('Proprietary')
+depends=(
+    'xdg-utils'
+    # Electron runtime libraries (对应 deb Depends)
+    'alsa-lib'
+    'at-spi2-core'
+    'atk'
+    'cairo'
+    'dbus'
+    'gcc-libs'
+    'glib2'
+    'glibc'
+    'gtk3'
+    'libcups'
+    'libdrm'
+    'libx11'
+    'libxcb'
+    'libxcomposite'
+    'libxdamage'
+    'libxext'
+    'libxfixes'
+    'libxkbcommon'
+    'libxrandr'
+    'mesa'
+    'nspr'
+    'nss'
+    'pango'
+)
+optdepends=(
+    'zenity: GTK dialog fallback'
+    'kdialog: KDE dialog fallback'
+)
+options=(!debug !strip)
+source=()
+sha256sums=()
+
+package() {
+    cp -a --no-preserve=ownership "__STAGING_DIR__/." "${pkgdir}/"
+}

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# MiniMax Code for Linux 启动脚本
+# 渲染器通过自定义 app:// 协议加载(主进程内建),无需 webview-server
+set -uo pipefail
+
+APP_DIR="__APP_DIR__"
+APP_NAME="__APP_NAME__"
+APP_ID="__APP_ID__"
+
+# 运行参数:默认无沙箱(普通用户环境 chrome-sandbox 无 SUID 权限时必需)
+EXTRA_ARGS=""
+if ! [ -u "$APP_DIR/chrome-sandbox" ]; then
+  EXTRA_ARGS="--no-sandbox"
+fi
+
+exec "$APP_DIR/electron" $EXTRA_ARGS \
+  --enable-features=UseOzonePlatform \
+  --ozone-platform-hint=auto \
+  --class="$APP_NAME" \
+  "$APP_DIR/resources/app.asar" "$@"

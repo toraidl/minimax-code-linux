@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=MiniMax Code
+Comment=MiniMax Code for Linux (unofficial port)
+Exec=AppRun %U
+Icon=__PACKAGE_NAME__
+Terminal=false
+Type=Application
+Categories=Development;Network;Chat;
+StartupNotify=true
+StartupWMClass=__STARTUP_WM_CLASS__
+MimeType=__PROTOCOLS__
+X-AppImage-Version=__VERSION__
