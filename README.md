@@ -143,6 +143,13 @@ ls dist/
   (海外 `minimax://`,国内 `minimax-cn://`)
 - **窗口/开始菜单无图标**:主进程未给 BrowserWindow 设 icon。修复:patch 6 处
   窗口创建点注入 icon + hicolor 图标主题安装 + `StartupWMClass` 匹配
+- **托盘图标不显示**:`getTrayIcon()` 生产模式拼 `process.resourcesPath + '/resources'`
+  (即 `<app>/resources/resources/tray.png`),缺目录导致图标加载失败。
+  修复:安装时补 `resources/resources/tray.png`
+- **托盘右键菜单无"退出"等项**:原代码 `setContextMenu(null)` + 监听
+  `right-click` 事件(类 macOS 模式),而 Linux 的 StatusNotifier 后端不派发
+  `right-click` 事件。修复:Linux 分支改用 `setContextMenu` 注册菜单
+  (桌面端右键时经 DBus ContextMenu 拉取)
 - **ripgrep 平台包缺失**:macOS 包只带 darwin 版 `@vscode/ripgrep-*`,
   需补 `linux-x64` 版并重新打包 asar
 

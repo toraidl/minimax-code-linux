@@ -207,7 +207,18 @@ patch_windows_icon() {
   rm -rf "$tmp"
 }
 
-# ---------- 7. 重新打包 asar ----------
+# ---------- 7. 托盘右键菜单补丁 ----------
+# Linux 的 StatusNotifier 后端不派发 right-click 事件,原代码(类 macOS 模式)
+# setContextMenu(null) + right-click 会导致托盘右键无菜单。改为 Linux 上用
+# setContextMenu 注册菜单,桌面端右键时通过 DBus ContextMenu 拉取。
+patch_tray_menu() {
+  local trayjs="$ASAR_EXTRACT_DIR/dist/main/modules/tray/index.js"
+  [ -f "$trayjs" ] || { warn "未找到 tray/index.js,跳过托盘菜单补丁"; return; }
+  log "托盘右键菜单补丁..."
+  node "${PROJECT_DIR}/scripts/patch-tray-menu.js" "$ASAR_EXTRACT_DIR"
+}
+
+# ---------- 8. 重新打包 asar ----------
 repack_asar() {
   local out="$OUT_ASAR"
   log "重新打包 asar (${ELECTRON_VERSION} 平台包已纳入)..."
@@ -271,6 +282,10 @@ install_icons() {
   # 应用资源里的托盘/窗口图标
   [ -f "${tmp}/icon_256x256x32.png" ] && cp "${tmp}/icon_256x256x32.png" "$APP_DIR/resources/tray.png"
   [ -f "${tmp}/icon_256x256x32.png" ] && cp "${tmp}/icon_256x256x32.png" "$APP_DIR/resources/icon.png"
+  # 托盘图标路径:getTrayIcon() 生产模式拼 process.resourcesPath + '/resources',
+  # 即 <app>/resources/resources/tray.png,缺少则托盘图标加载失败
+  mkdir -p "$APP_DIR/resources/resources"
+  [ -f "${tmp}/icon_256x256x32.png" ] && cp "${tmp}/icon_256x256x32.png" "$APP_DIR/resources/resources/tray.png"
   # hicolor 主题必须有 index.theme,否则 launcher/GTK 无法解析图标名
   if [ ! -f "$HOME/.local/share/icons/hicolor/index.theme" ]; then
     mkdir -p "$HOME/.local/share/icons/hicolor"
@@ -344,6 +359,7 @@ main() {
   add_linux_platform_pkgs
   rebuild_native_modules
   patch_windows_icon
+  patch_tray_menu
   repack_asar
   download_electron
   assemble

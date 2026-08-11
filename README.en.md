@@ -160,6 +160,15 @@ cleans them up. Both editions can be installed simultaneously without conflict.
 - **No window/launcher icon**: the main process never set a BrowserWindow icon.
   Fixed by patching 6 window creation sites + installing the hicolor icon theme
   + matching `StartupWMClass`
+- **Tray icon not shown**: `getTrayIcon()` appends `process.resourcesPath +
+  '/resources'` in production (i.e. `<app>/resources/resources/tray.png`); the
+  missing directory made icon loading fail. Fixed by shipping
+  `resources/resources/tray.png` during install
+- **Tray context menu missing "Quit" etc.**: the original code used
+  `setContextMenu(null)` + a `right-click` listener (macOS-style), but the Linux
+  StatusNotifier backend never dispatches `right-click`. Fixed by registering the
+  menu via `setContextMenu` on Linux (the desktop pulls it through DBus
+  ContextMenu on right-click)
 - **Missing ripgrep platform package**: the macOS package only ships
   darwin `@vscode/ripgrep-*`; the `linux-x64` one must be added and the asar
   repacked
